@@ -48,7 +48,19 @@ export function SendTestModal({ isOpen, onClose, campaign, onSuccess }: SendTest
         }),
       });
 
-      const data = await res.json();
+      let data: any;
+      const text = await res.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = {
+          success: false,
+          message: res.status === 413
+            ? 'ขนาดรูปภาพหรือข้อมูลใหญ่เกินไป กรุณาใช้ไฟล์ภาพขนาดเล็กลง หรือใช้ HTTPS URL'
+            : `เซิร์ฟเวอร์ส่งข้อผิดพลาด (${res.status}): ${text.slice(0, 150)}`,
+        };
+      }
+
       setResult(data);
 
       if (data.success && onSuccess) {

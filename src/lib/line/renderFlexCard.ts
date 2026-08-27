@@ -1,6 +1,7 @@
 import { FlexCardContent, UtmConfig } from '@/types/message';
 import { LineFlexBubble } from '@/types/line';
 import { applyUtmTracking } from '@/lib/utm';
+import { sanitizeLineImageUrl } from './imageUrlHelper';
 
 export function renderFlexCard(
   card: FlexCardContent,
@@ -16,16 +17,19 @@ export function renderFlexCard(
   // 1. Hero Block (Optional)
   let hero: any = undefined;
   if (card.heroImage && card.heroImage.trim() !== '') {
+    const isImageClickable = card.enableImageClick !== false;
+    const heroActionUrl = card.imageClickUrl ? applyUtmTracking(card.imageClickUrl, utm, contentOverride) : finalCtaUrl;
+
     hero = {
       type: 'image',
-      url: card.heroImage.trim(),
+      url: sanitizeLineImageUrl(card.heroImage),
       size: 'full',
       aspectRatio: card.heroAspectRatio || '20:13',
       aspectMode: 'cover',
-      action: card.ctaUrl
+      action: isImageClickable && (card.ctaUrl || card.imageClickUrl)
         ? {
             type: 'uri',
-            uri: finalCtaUrl,
+            uri: heroActionUrl,
             label: card.ctaLabel || 'ดูรายละเอียด',
           }
         : undefined,

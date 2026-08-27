@@ -1,6 +1,7 @@
 import { ImageCarouselContent, UtmConfig } from '@/types/message';
 import { LineFlexMessage, LineFlexBubble } from '@/types/line';
 import { applyUtmTracking } from '@/lib/utm';
+import { sanitizeLineImageUrl } from './imageUrlHelper';
 
 export function renderImageCarousel(
   content: ImageCarouselContent,
@@ -31,24 +32,31 @@ export function renderImageCarousel(
       };
     }
 
+    const safeImageUrl = sanitizeLineImageUrl(
+      card.imageUrl,
+      'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80'
+    );
+
     return {
       type: 'bubble',
       size: 'mega',
       hero: {
         type: 'image',
-        url: card.imageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80',
+        url: safeImageUrl,
         size: 'full',
         aspectRatio,
         aspectMode: 'cover',
         action,
       },
-      // Invisible spacer body required by some LINE Flex parsers
       body: {
         type: 'box',
         layout: 'vertical',
         contents: [
           {
-            type: 'filler',
+            type: 'text',
+            text: card.label || ' ',
+            size: 'xxs',
+            color: '#FFFFFF00',
           },
         ],
         paddingAll: '0px',

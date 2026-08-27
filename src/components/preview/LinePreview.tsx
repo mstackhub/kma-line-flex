@@ -420,13 +420,36 @@ function SingleFlexCardPreview({
     <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 flex flex-col font-sans">
       {/* Hero Image */}
       {card.heroImage && card.heroImage.trim() !== '' ? (
-        <div className="relative w-full bg-slate-100 overflow-hidden aspect-[20/13]">
+        <div
+          onClick={() => {
+            const url = card.imageClickUrl || card.ctaUrl;
+            if (card.enableImageClick !== false && url) {
+              window.open(url, '_blank');
+            }
+          }}
+          className={cn(
+            'relative w-full bg-slate-100 overflow-hidden aspect-[20/13] group/hero',
+            card.enableImageClick !== false && (card.ctaUrl || card.imageClickUrl)
+              ? 'cursor-pointer'
+              : ''
+          )}
+          title={
+            card.enableImageClick !== false && (card.ctaUrl || card.imageClickUrl)
+              ? 'แตะที่ภาพเพื่อเปิดลิงก์'
+              : undefined
+          }
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={card.heroImage}
             alt={card.headline || 'Product'}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover group-hover/hero:scale-102 transition-transform duration-200"
           />
+          {card.enableImageClick !== false && (card.ctaUrl || card.imageClickUrl) && (
+            <div className="absolute top-2 right-2 p-1 rounded-md bg-black/60 text-white opacity-0 group-hover/hero:opacity-100 transition-opacity">
+              <ExternalLink className="h-3 w-3" />
+            </div>
+          )}
         </div>
       ) : null}
 

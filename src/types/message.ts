@@ -70,6 +70,8 @@ export interface FlexCardContent {
   id?: string;
   heroImage?: string;
   heroAspectRatio?: '1:1' | '1.51:1' | '20:13' | '16:9';
+  enableImageClick?: boolean;
+  imageClickUrl?: string;
   badge?: string;
   headline: string;
   subheadline?: string;

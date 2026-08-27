@@ -18,13 +18,36 @@ export function FlexCardForm({ card, onChange, indexLabel = 'การ์ดส�
   return (
     <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-2xs space-y-5">
       {/* Hero Image Section with Local Upload */}
-      <ImageUploadInput
-        label="รูปภาพหลัก (Hero Image)"
-        value={card.heroImage || ''}
-        onChange={(url) => onChange({ ...card, heroImage: url })}
-        placeholder="วาง URL หรือคลิก 'เลือกรูปจากเครื่อง' ด้านขวา"
-        helperText="ขนาดแนะนำ 800x520 px (สัดส่วน 20:13) หรือรูปสี่เหลี่ยมจัตุรัส"
-      />
+      <div className="space-y-3">
+        <ImageUploadInput
+          label="รูปภาพหลัก (Hero Image)"
+          value={card.heroImage || ''}
+          onChange={(url) => onChange({ ...card, heroImage: url })}
+          placeholder="วาง URL หรือคลิก 'เลือกรูปจากเครื่อง' ด้านขวา"
+          helperText="ขนาดแนะนำ 800x520 px (สัดส่วน 20:13) หรือรูปสี่เหลี่ยมจัตุรัส"
+        />
+
+        {/* Clickable Image Checkbox Option */}
+        {card.heroImage && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-800">
+              <input
+                type="checkbox"
+                checked={card.enableImageClick !== false}
+                onChange={(e) => onChange({ ...card, enableImageClick: e.target.checked })}
+                className="h-4 w-4 rounded border-slate-300 text-[#06C755] focus:ring-[#06C755]"
+              />
+              <span>✓ ให้คลิกที่รูปภาพเพื่อเปิดลิงก์ได้ด้วย (Clickable Image)</span>
+            </label>
+
+            {card.enableImageClick !== false && (
+              <span className="text-[11px] text-slate-500">
+                (แตะที่รูปภาพจะเปิดลิงก์เดียวกับปุ่ม CTA อัตโนมัติ)
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Badge Section */}
       <div>
