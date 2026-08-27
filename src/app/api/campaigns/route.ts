@@ -3,6 +3,8 @@ import { getCampaigns, saveCampaign } from '@/lib/storage';
 import { Campaign } from '@/types/message';
 import { nanoid } from 'nanoid';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const campaigns = getCampaigns();

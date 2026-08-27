@@ -3,33 +3,53 @@ import path from 'path';
 import { Campaign, Template, MediaAsset, Settings } from '@/types/message';
 import { DEFAULT_TEMPLATES } from '@/lib/templates/defaultTemplates';
 
-const DATA_DIR = path.join(process.cwd(), '.data');
+// Use /tmp directory on Vercel Serverless Lambda to ensure write permissions
+const DATA_DIR =
+  process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+    ? path.join('/tmp', '.data')
+    : path.join(process.cwd(), '.data');
+
+// In-memory cache fallback in case filesystem is completely unavailable
+let memoryStore: Record<string, any> = {};
 
 function ensureDirectory() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch {
+    // Ignore error in restricted build environments
   }
 }
 
 function readJsonFile<T>(fileName: string, fallback: T): T {
-  ensureDirectory();
-  const filePath = path.join(DATA_DIR, fileName);
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2), 'utf-8');
-    return fallback;
-  }
   try {
+    ensureDirectory();
+    const filePath = path.join(DATA_DIR, fileName);
+    if (!fs.existsSync(filePath)) {
+      try {
+        fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2), 'utf-8');
+      } catch {}
+      return memoryStore[fileName] || fallback;
+    }
     const raw = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(raw) as T;
+    const parsed = JSON.parse(raw) as T;
+    memoryStore[fileName] = parsed;
+    return parsed;
   } catch {
-    return fallback;
+    return memoryStore[fileName] || fallback;
   }
 }
 
 function writeJsonFile<T>(fileName: string, data: T): void {
-  ensureDirectory();
-  const filePath = path.join(DATA_DIR, fileName);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  memoryStore[fileName] = data;
+  try {
+    ensureDirectory();
+    const filePath = path.join(DATA_DIR, fileName);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch {
+    // Keep in-memory store if write is restricted
+  }
 }
 
 // 1. CAMPAIGNS
@@ -158,18 +178,19 @@ export function deleteMediaAsset(id: string): boolean {
 }
 
 // 4. SETTINGS
-const DEFAULT_SETTINGS: Settings = {
-  channelId: process.env.LINE_CHANNEL_ID || '2001992825',
-  channelSecret: process.env.LINE_CHANNEL_SECRET || '',
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
-  geminiApiKey: process.env.GEMINI_API_KEY || '',
-  environmentMode: 'development',
-  defaultTestUserId: 'U1234567890abcdef1234567890abcdef',
-  isConnected: false,
-};
-
 export function getSettings(): Settings {
-  return readJsonFile<Settings>('settings.json', DEFAULT_SETTINGS);
+  const defaults: Settings = {
+    channelId: process.env.LINE_CHANNEL_ID || '2010497295',
+    channelSecret: process.env.LINE_CHANNEL_SECRET || 'de9c7c0188ca7b6f04f6c23bf5ef748d',
+    channelAccessToken:
+      process.env.LINE_CHANNEL_ACCESS_TOKEN ||
+      'KaQDW5Dwyx0//8KfkRSz60t36xg7RogA2maltuouWtEBqh6TR3N39A/1TYXLwALjyO5mMnkQuSdKBDxt0M9yw84i8/LU4U34eg2ShX5XgK0CNd9hagy1dgxdLA+OGEzJ6PEmDWlSjoQYfiHZbvS46AdB04t89/1O/w1cDnyilFU=',
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
+    environmentMode: 'development',
+    defaultTestUserId: 'U11b2d1a85e27f9525b5c25df8b9aed74',
+    isConnected: true,
+  };
+  return readJsonFile<Settings>('settings.json', defaults);
 }
 
 export function saveSettings(settings: Partial<Settings>): Settings {
@@ -203,5 +224,5 @@ export function getBroadcastLogs(): BroadcastLog[] {
 export function logBroadcast(entry: BroadcastLog): void {
   const logs = getBroadcastLogs();
   logs.unshift(entry);
-  writeJsonFile('broadcast_logs.json', logs.slice(0, 100)); // Keep last 100 logs
+  writeJsonFile('broadcast_logs.json', logs.slice(0, 100));
 }

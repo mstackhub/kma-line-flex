@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { deleteMediaAsset } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }

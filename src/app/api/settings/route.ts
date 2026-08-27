@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getSettings, saveSettings } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const settings = getSettings();
-    // Mask sensitive keys
     const maskedToken = settings.channelAccessToken
       ? '••••••••' + settings.channelAccessToken.slice(-4)
       : '';
@@ -36,14 +37,11 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const current = getSettings();
-
     const updates: any = {};
     if (body.channelId !== undefined) updates.channelId = body.channelId;
     if (body.environmentMode !== undefined) updates.environmentMode = body.environmentMode;
     if (body.defaultTestUserId !== undefined) updates.defaultTestUserId = body.defaultTestUserId;
 
-    // Only update secrets if non-masked real strings were provided
     if (body.channelSecret && !body.channelSecret.startsWith('••••')) {
       updates.channelSecret = body.channelSecret;
     }

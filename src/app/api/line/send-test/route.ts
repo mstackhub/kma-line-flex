@@ -6,6 +6,8 @@ import { sendLinePushMessage } from '@/lib/line/client';
 import { logBroadcast, saveCampaign, getSettings } from '@/lib/storage';
 import { nanoid } from 'nanoid';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();

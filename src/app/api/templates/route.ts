@@ -3,6 +3,8 @@ import { getTemplates, saveCustomTemplate } from '@/lib/storage';
 import { Template } from '@/types/message';
 import { nanoid } from 'nanoid';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const templates = getTemplates();

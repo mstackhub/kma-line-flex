@@ -3,6 +3,8 @@ import { Campaign } from '@/types/message';
 import { validateCampaign } from '@/lib/validation';
 import { renderLineMessages } from '@/lib/line';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const campaign: Campaign = await req.json();

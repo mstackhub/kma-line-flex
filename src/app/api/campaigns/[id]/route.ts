@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getCampaignById, saveCampaign, deleteCampaign } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }

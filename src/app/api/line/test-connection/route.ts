@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { verifyLineConnection } from '@/lib/line/client';
 import { saveSettings } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     const result = await verifyLineConnection();

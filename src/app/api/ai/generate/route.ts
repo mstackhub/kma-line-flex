@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { generateStructuredContent } from '@/lib/ai/assistant';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   try {
     const { prompt, targetType } = await req.json();

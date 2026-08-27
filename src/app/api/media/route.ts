@@ -3,6 +3,8 @@ import { getMediaAssets, saveMediaAsset } from '@/lib/storage';
 import { MediaAsset } from '@/types/message';
 import { nanoid } from 'nanoid';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const assets = getMediaAssets();
