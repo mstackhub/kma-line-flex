@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Campaign, FlexCardContent, ImagemapArea } from '@/types/message';
 import { renderLineMessages } from '@/lib/line';
+import { DraggableScrollContainer } from './DraggableScrollContainer';
 import { cn } from '@/lib/utils';
 
 interface LinePreviewProps {
@@ -248,9 +249,9 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
 
                 {messageType === 'image_carousel' && (
                   <div className="w-full">
-                    {/* Image Carousel Horizontal Swipe */}
+                    {/* Image Carousel Horizontal Swipe with Mouse Drag + Touchpad */}
                     {((content as any)?.cards || []).length > 0 ? (
-                      <div className="flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory line-chat-scroll">
+                      <DraggableScrollContainer className="pb-1">
                         {((content as any).cards as any[]).map((card, idx) => (
                           <div
                             key={card.id || idx}
@@ -260,14 +261,14 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
                               }
                             }}
                             className={cn(
-                              'shrink-0 snap-start bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 cursor-pointer group relative',
+                              'shrink-0 snap-start bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 cursor-pointer group relative transition-transform duration-150',
                               (content as any)?.aspectRatio === '1:1'
-                                ? 'w-[250px] aspect-square'
+                                ? 'w-[220px] aspect-square'
                                 : (content as any)?.aspectRatio === '16:9'
-                                ? 'w-[270px] aspect-[16/9]'
+                                ? 'w-[245px] aspect-[16/9]'
                                 : (content as any)?.aspectRatio === '9:16'
-                                ? 'w-[190px] aspect-[9/16]'
-                                : 'w-[250px] aspect-[20/13]'
+                                ? 'w-[170px] aspect-[9/16]'
+                                : 'w-[220px] aspect-[20/13]'
                             )}
                           >
                             {card.imageUrl ? (
@@ -275,7 +276,8 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
                               <img
                                 src={card.imageUrl}
                                 alt={card.label || 'Image'}
-                                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+                                draggable={false}
+                                className="w-full h-full object-cover pointer-events-none group-hover:scale-102 transition-transform duration-200"
                               />
                             ) : (
                               <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400 p-2 text-center text-xs">
@@ -285,13 +287,13 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
                             )}
 
                             {/* Hover info badge */}
-                            <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-xs text-white text-[10px] px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity truncate flex items-center justify-between">
+                            <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-xs text-white text-[10px] px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity truncate flex items-center justify-between pointer-events-none">
                               <span className="truncate">{card.label || `Image ${idx + 1}`}</span>
                               {card.actionType === 'uri' && <ExternalLink className="h-3 w-3 shrink-0 ml-1" />}
                             </div>
                           </div>
                         ))}
-                      </div>
+                      </DraggableScrollContainer>
                     ) : (
                       <div className="bg-white rounded-2xl p-4 text-center text-xs text-slate-500">
                         ยังไม่มีรูปภาพใน Carousel กรุณาเพิ่มรูปภาพ
@@ -302,16 +304,16 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
 
                 {messageType === 'flex_carousel' && (
                   <div className="w-full">
-                    {/* Carousel Horizontal Scroll View */}
+                    {/* Carousel Horizontal Scroll View with Mouse Drag + Touchpad */}
                     <div className="relative">
                       {((content as any)?.cards || []).length > 0 ? (
-                        <div className="flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory line-chat-scroll">
+                        <DraggableScrollContainer className="pb-1">
                           {((content as any).cards as FlexCardContent[]).map((card, idx) => (
-                            <div key={card.id || idx} className="w-[230px] shrink-0 snap-start">
+                            <div key={card.id || idx} className="w-[205px] shrink-0 snap-start">
                               <SingleFlexCardPreview card={card} isCarousel />
                             </div>
                           ))}
-                        </div>
+                        </DraggableScrollContainer>
                       ) : (
                         <div className="bg-white rounded-2xl p-4 text-center text-xs text-slate-500">
                           ไม่มีการ์ดใน Carousel กรุณาเพิ่มการ์ดสินค้า
@@ -335,13 +337,13 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
                       </div>
                     )}
                     {/* Followed by Product Carousel */}
-                    <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory line-chat-scroll">
+                    <DraggableScrollContainer className="pb-1">
                       {((content as any)?.cards || []).map((card: FlexCardContent, idx: number) => (
-                        <div key={card.id || idx} className="w-[220px] shrink-0 snap-start">
+                        <div key={card.id || idx} className="w-[200px] shrink-0 snap-start">
                           <SingleFlexCardPreview card={card} isCarousel />
                         </div>
                       ))}
-                    </div>
+                    </DraggableScrollContainer>
                   </div>
                 )}
 
