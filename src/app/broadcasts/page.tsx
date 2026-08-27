@@ -187,9 +187,11 @@ export default function BroadcastsListPage() {
                     <td className="py-4 px-4">
                       <span
                         className={cn(
-                          'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase inline-flex items-center gap-1',
+                          'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase inline-flex items-center gap-1.5',
                           cmp.status === 'sent'
                             ? 'bg-emerald-100 text-emerald-800'
+                            : cmp.status === 'scheduled'
+                            ? 'bg-indigo-100 text-indigo-800'
                             : cmp.status === 'test_sent'
                             ? 'bg-blue-100 text-blue-800'
                             : 'bg-amber-100 text-amber-800'
@@ -200,12 +202,18 @@ export default function BroadcastsListPage() {
                             'h-1.5 w-1.5 rounded-full',
                             cmp.status === 'sent'
                               ? 'bg-emerald-600'
+                              : cmp.status === 'scheduled'
+                              ? 'bg-indigo-600 animate-pulse'
                               : cmp.status === 'test_sent'
                               ? 'bg-blue-600'
                               : 'bg-amber-600'
                           )}
                         />
-                        <span>{cmp.status}</span>
+                        <span>
+                          {cmp.status === 'scheduled' && cmp.scheduledAt
+                            ? `⏰ ${new Date(cmp.scheduledAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`
+                            : cmp.status}
+                        </span>
                       </span>
                     </td>
                     <td className="py-4 px-4">
