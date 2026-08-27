@@ -262,12 +262,12 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
                             className={cn(
                               'shrink-0 snap-start bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 cursor-pointer group relative',
                               (content as any)?.aspectRatio === '1:1'
-                                ? 'w-[210px] aspect-square'
+                                ? 'w-[250px] aspect-square'
                                 : (content as any)?.aspectRatio === '16:9'
-                                ? 'w-[250px] aspect-[16/9]'
+                                ? 'w-[270px] aspect-[16/9]'
                                 : (content as any)?.aspectRatio === '9:16'
-                                ? 'w-[180px] aspect-[9/16]'
-                                : 'w-[230px] aspect-[20/13]'
+                                ? 'w-[190px] aspect-[9/16]'
+                                : 'w-[250px] aspect-[20/13]'
                             )}
                           >
                             {card.imageUrl ? (

@@ -13,9 +13,9 @@ export function renderImageCarousel(
   const bubbles: LineFlexBubble[] = cards.map((card, index) => {
     let action: any = undefined;
 
-    if (card.actionType === 'uri' && card.uri) {
+    if (card.actionType === 'uri' && card.uri && card.uri.trim() !== '') {
       const finalUri = applyUtmTracking(
-        card.uri,
+        card.uri.trim(),
         utm,
         `image_card_${index + 1}_${(card.label || 'item').toLowerCase().replace(/[^a-z0-9]/g, '_')}`
       );
@@ -24,11 +24,11 @@ export function renderImageCarousel(
         label: card.label || `Image ${index + 1}`,
         uri: finalUri,
       };
-    } else if (card.actionType === 'message' && card.text) {
+    } else if (card.actionType === 'message' && card.text && card.text.trim() !== '') {
       action = {
         type: 'message',
         label: card.label || `Image ${index + 1}`,
-        text: card.text,
+        text: card.text.trim(),
       };
     }
 
@@ -37,9 +37,10 @@ export function renderImageCarousel(
       'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80'
     );
 
+    // Giga size (Maximum size supported by LINE Flex) + Pure full-bleed image (No body / No yellow bar)
     return {
       type: 'bubble',
-      size: 'mega',
+      size: 'giga',
       hero: {
         type: 'image',
         url: safeImageUrl,
@@ -47,24 +48,6 @@ export function renderImageCarousel(
         aspectRatio,
         aspectMode: 'cover',
         action,
-      },
-      body: {
-        type: 'box',
-        layout: 'vertical',
-        contents: [
-          {
-            type: 'text',
-            text: card.label || ' ',
-            size: 'xxs',
-            color: '#FFFFFF00',
-          },
-        ],
-        paddingAll: '0px',
-      },
-      styles: {
-        body: {
-          backgroundColor: '#FFFFFF00',
-        },
       },
     };
   });
