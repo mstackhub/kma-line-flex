@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Upload,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { MediaAsset } from '@/types/message';
 import { formatBytes } from '@/lib/utils';
@@ -22,6 +23,7 @@ export default function MediaLibraryPage() {
   const [newFileName, setNewFileName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isUploadingLocal, setIsUploadingLocal] = useState(false);
 
   const fetchAssets = () => {
     fetch('/api/media')
@@ -46,6 +48,30 @@ export default function MediaLibraryPage() {
       if (res.ok) fetchAssets();
     } catch {
       alert('เกิดข้อผิดพลาดในการลบ');
+    }
+  };
+
+  const handleDirectLocalUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingLocal(true);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (res.ok) {
+        fetchAssets();
+      }
+    } catch {
+      alert('เกิดข้อผิดพลาดในการอัปโหลดไฟล์');
+    } finally {
+      setIsUploadingLocal(false);
+      e.target.value = '';
     }
   };
 
@@ -93,18 +119,37 @@ export default function MediaLibraryPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            จัดเก็บและนำลิงก์รูปภาพ Artwork / สินค้าไปใช้ซ้ำในหลายแคมเปญได้อย่างสะดวก
+            จัดเก็บ อัปโหลดจากเครื่องคอมพิวเตอร์ และนำลิงก์รูปภาพไปใช้ซ้ำในหลายแคมเปญได้อย่างสะดวก
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 rounded-xl bg-[#06C755] hover:bg-[#05B04B] px-4 py-2 text-xs font-bold text-white shadow-xs transition-all"
-        >
-          <Plus className="h-4 w-4" />
-          <span>+ เพิ่มรูปภาพใหม่</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Direct upload from local button */}
+          <label className="flex items-center gap-2 rounded-xl bg-[#06C755] hover:bg-[#05B04B] px-4 py-2 text-xs font-bold text-white shadow-xs cursor-pointer transition-all">
+            {isUploadingLocal ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
+            <span>{isUploadingLocal ? 'กำลังอัปโหลด...' : '+ อัปโหลดรูปจากเครื่อง'}</span>
+            <input
+              type="file"
+              accept="image/*"
+              disabled={isUploadingLocal}
+              onChange={handleDirectLocalUpload}
+              className="hidden"
+            />
+          </label>
+
+          {/* Add by URL */}
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 px-3.5 py-2 text-xs font-semibold text-slate-700 border border-slate-200 transition-colors"
+          >
+            <span>ใส่ด้วย URL</span>
+          </button>
+        </div>
       </div>
 
       {/* Media Grid */}
@@ -174,12 +219,12 @@ export default function MediaLibraryPage() {
         })}
       </div>
 
-      {/* Add Image Modal */}
+      {/* Add Image by URL Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">เพิ่มรูปภาพใหม่ใน Media Library</h3>
+              <h3 className="font-bold text-slate-900 text-sm">เพิ่มรูปภาพด้วย URL</h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}

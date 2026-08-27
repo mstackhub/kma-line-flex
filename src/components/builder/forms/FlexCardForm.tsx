@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { FlexCardContent } from '@/types/message';
 import { CtaPresetPicker } from '@/components/builder/CtaPresetPicker';
-import { Image as ImageIcon, Sparkles, Tag, ChevronDown, ChevronUp } from 'lucide-react';
+import { ImageUploadInput } from '@/components/ui/ImageUploadInput';
+import { Sparkles, Tag, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface FlexCardFormProps {
   card: FlexCardContent;
@@ -14,29 +15,16 @@ interface FlexCardFormProps {
 const BADGE_PRESETS = ['NEW', 'HOT', 'BEST SELLER', 'SALE 50%', '1 แถม 1', 'LIMITED', 'RECOMMENDED'];
 
 export function FlexCardForm({ card, onChange, indexLabel = 'การ์ดสินค้า' }: FlexCardFormProps) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
   return (
     <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-2xs space-y-5">
-      {/* Hero Image Section */}
-      <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center justify-between">
-          <span>รูปภาพหลัก (Hero Image)</span>
-          <span className="text-[11px] font-normal text-slate-400">ขนาดแนะนำ 800x520 px (20:13)</span>
-        </label>
-        <div className="relative">
-          <input
-            type="url"
-            value={card.heroImage || ''}
-            onChange={(e) => onChange({ ...card, heroImage: e.target.value })}
-            placeholder="https://example.com/product-image.jpg"
-            className="w-full rounded-xl border border-slate-300 pl-3.5 pr-10 py-2.5 text-sm focus:border-[#06C755] focus:ring-1 focus:ring-[#06C755] outline-none"
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-            <ImageIcon className="h-4 w-4" />
-          </div>
-        </div>
-      </div>
+      {/* Hero Image Section with Local Upload */}
+      <ImageUploadInput
+        label="รูปภาพหลัก (Hero Image)"
+        value={card.heroImage || ''}
+        onChange={(url) => onChange({ ...card, heroImage: url })}
+        placeholder="วาง URL หรือคลิก 'เลือกรูปจากเครื่อง' ด้านขวา"
+        helperText="ขนาดแนะนำ 800x520 px (สัดส่วน 20:13) หรือรูปสี่เหลี่ยมจัตุรัส"
+      />
 
       {/* Badge Section */}
       <div>

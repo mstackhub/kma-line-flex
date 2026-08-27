@@ -1,20 +1,17 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Plus,
   Trash2,
   ExternalLink,
   MessageSquare,
-  Move,
-  Maximize2,
   Sparkles,
   Info,
-  Copy,
-  Check,
   MousePointerClick,
 } from 'lucide-react';
 import { ImagemapArea, ImagemapMessageContent } from '@/types/message';
+import { ImageUploadInput } from '@/components/ui/ImageUploadInput';
 import { cn } from '@/lib/utils';
 import { nanoid } from 'nanoid';
 
@@ -65,7 +62,6 @@ export function ImagemapVisualEditor({ content, onChange }: ImagemapVisualEditor
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only start drawing if clicking on background canvas (not on existing area buttons)
     if ((e.target as HTMLElement).closest('.zone-card-action')) return;
 
     const coords = getCoordinatesFromEvent(e);
@@ -202,15 +198,13 @@ export function ImagemapVisualEditor({ content, onChange }: ImagemapVisualEditor
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              ลิงก์รูปภาพ Artwork (HTTPS URL) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="url"
+            <ImageUploadInput
+              label="รูปภาพ Artwork"
+              required
               value={content.baseUrl || ''}
-              onChange={(e) => onChange({ ...content, baseUrl: e.target.value })}
-              placeholder="https://example.com/artwork-1040.jpg"
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:border-[#06C755] focus:ring-1 focus:ring-[#06C755] outline-none"
+              onChange={(url) => onChange({ ...content, baseUrl: url })}
+              placeholder="วาง URL หรือคลิก 'เลือกรูปจากเครื่อง'"
+              helperText="ขนาดแนะนำ กว้าง 1040px"
             />
           </div>
 
@@ -319,7 +313,7 @@ export function ImagemapVisualEditor({ content, onChange }: ImagemapVisualEditor
           ) : (
             <div className="h-64 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
               <Info className="h-8 w-8 mb-2 text-slate-300" />
-              <p className="text-sm font-medium text-slate-600">กรุณาใส่ลิงก์รูปภาพ Artwork ด้านบนก่อน</p>
+              <p className="text-sm font-medium text-slate-600">กรุณาใส่หรือเลือกรูปภาพ Artwork ด้านบนก่อน</p>
               <p className="text-xs text-slate-400 mt-1">หลังจากนั้นคุณจะสามารถลากกรอบกำหนดพื้นที่คลิกบนภาพได้ทันที</p>
             </div>
           )}
