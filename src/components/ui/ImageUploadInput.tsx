@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FolderOpen, Link as LinkIcon, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { MediaPickerModal } from '@/components/modals/MediaPickerModal';
+import { compressImageFile } from '@/lib/imageCompressor';
 import { cn } from '@/lib/utils';
 
 interface ImageUploadInputProps {
@@ -31,10 +32,14 @@ export function ImageUploadInput({
     if (!file) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
 
     try {
+      // Auto compress to max 1040px with high quality JPEG (100KB-200KB)
+      const compressedFile = await compressImageFile(file, 1040, 1040, 0.85);
+
+      const formData = new FormData();
+      formData.append('file', compressedFile);
+
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { MediaAsset } from '@/types/message';
 import { FolderOpen, Check, Upload, Trash2, X, Plus } from 'lucide-react';
 import { formatBytes } from '@/lib/utils';
+import { compressImageFile } from '@/lib/imageCompressor';
 
 interface MediaPickerModalProps {
   isOpen: boolean;
@@ -33,10 +34,11 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
+      const compressedFile = await compressImageFile(file, 1040, 1040, 0.85);
+      const formData = new FormData();
+      formData.append('file', compressedFile);
+
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
