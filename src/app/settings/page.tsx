@@ -78,6 +78,7 @@ export default function SettingsPage() {
 
       if (res.ok) {
         setSaveBanner(true);
+        window.dispatchEvent(new Event('settings-updated'));
         setTimeout(() => setSaveBanner(false), 3000);
       }
     } catch {
