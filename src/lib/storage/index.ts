@@ -117,7 +117,7 @@ const DEFAULT_ASSETS: MediaAsset[] = [
   {
     id: 'kma-01',
     fileName: 'kma-glow-dew-serum-mechanisms.jpg',
-    url: '/uploads/kma_glow_dew_01.jpg',
+    url: 'https://iili.io/CbgJs5u.jpg',
     fileSize: 184000,
     width: 1040,
     height: 1040,
@@ -127,7 +127,7 @@ const DEFAULT_ASSETS: MediaAsset[] = [
   {
     id: 'kma-02',
     fileName: 'kma-glow-dew-texture-hand.jpg',
-    url: '/uploads/kma_glow_dew_02.jpg',
+    url: 'https://iili.io/CbgdhLQ.jpg',
     fileSize: 172000,
     width: 1040,
     height: 1040,
@@ -137,7 +137,7 @@ const DEFAULT_ASSETS: MediaAsset[] = [
   {
     id: 'kma-03',
     fileName: 'kma-glow-dew-model-skin.jpg',
-    url: '/uploads/kma_glow_dew_03.jpg',
+    url: 'https://iili.io/CbgdOrP.jpg',
     fileSize: 198000,
     width: 1040,
     height: 1040,
@@ -146,12 +146,12 @@ const DEFAULT_ASSETS: MediaAsset[] = [
   },
   {
     id: 'kma-04',
-    fileName: 'kma-glow-dew-pipette-dropper.jpg',
-    url: '/uploads/kma_glow_dew_04.jpg',
+    fileName: 'kma-glow-dew-pipette-dropper.png',
+    url: 'https://iili.io/CbgdSpa.png',
     fileSize: 192000,
     width: 1040,
     height: 1040,
-    mimeType: 'image/jpeg',
+    mimeType: 'image/png',
     createdAt: new Date().toISOString(),
   },
   {
