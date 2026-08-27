@@ -246,6 +246,60 @@ export function LinePreview({ campaign, className }: LinePreviewProps) {
                   </div>
                 )}
 
+                {messageType === 'image_carousel' && (
+                  <div className="w-full">
+                    {/* Image Carousel Horizontal Swipe */}
+                    {((content as any)?.cards || []).length > 0 ? (
+                      <div className="flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory line-chat-scroll">
+                        {((content as any).cards as any[]).map((card, idx) => (
+                          <div
+                            key={card.id || idx}
+                            onClick={() => {
+                              if (card.actionType === 'uri' && card.uri) {
+                                window.open(card.uri, '_blank');
+                              }
+                            }}
+                            className={cn(
+                              'shrink-0 snap-start bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 cursor-pointer group relative',
+                              (content as any)?.aspectRatio === '1:1'
+                                ? 'w-[210px] aspect-square'
+                                : (content as any)?.aspectRatio === '16:9'
+                                ? 'w-[250px] aspect-[16/9]'
+                                : (content as any)?.aspectRatio === '9:16'
+                                ? 'w-[180px] aspect-[9/16]'
+                                : 'w-[230px] aspect-[20/13]'
+                            )}
+                          >
+                            {card.imageUrl ? (
+                              /* eslint-disable-next-line @next/next/no-img-element */
+                              <img
+                                src={card.imageUrl}
+                                alt={card.label || 'Image'}
+                                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400 p-2 text-center text-xs">
+                                <Info className="h-5 w-5 mb-1" />
+                                <span>ยังไม่ได้เลือกรูป</span>
+                              </div>
+                            )}
+
+                            {/* Hover info badge */}
+                            <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-xs text-white text-[10px] px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity truncate flex items-center justify-between">
+                              <span className="truncate">{card.label || `Image ${idx + 1}`}</span>
+                              {card.actionType === 'uri' && <ExternalLink className="h-3 w-3 shrink-0 ml-1" />}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-white rounded-2xl p-4 text-center text-xs text-slate-500">
+                        ยังไม่มีรูปภาพใน Carousel กรุณาเพิ่มรูปภาพ
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {messageType === 'flex_carousel' && (
                   <div className="w-full">
                     {/* Carousel Horizontal Scroll View */}

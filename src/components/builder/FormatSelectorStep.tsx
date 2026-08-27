@@ -47,6 +47,14 @@ const FORMAT_OPTIONS: {
     suitableFor: 'โปสเตอร์โปรโมชั่น, ภาพงานอีเวนต์, Artwork เดี่ยว',
   },
   {
+    type: 'image_carousel',
+    title: 'Image Carousel',
+    badge: 'ภาพชุดสไลด์ 🖼️',
+    description: 'รูปภาพล้วนแบบเลื่อนสไลด์ (1:1 Square, 16:9 Banner) แตะที่รูปเพื่อเปิดลิงก์',
+    icon: LayoutGrid,
+    suitableFor: 'Lookbook แฟชั่น, คอลเลกชันภาพชุด, Multi-Poster เลื่อนดู',
+  },
+  {
     type: 'imagemap',
     title: 'Imagemap',
     badge: 'หลายจุดคลิก',

@@ -1,6 +1,7 @@
 export type MessageType =
   | 'text'
   | 'image'
+  | 'image_carousel'
   | 'imagemap'
   | 'flex_card'
   | 'flex_carousel'
@@ -26,6 +27,21 @@ export interface SingleImageContent {
   previewImageUrl?: string;
   altText: string;
   destinationUrl?: string; // Optional clickable link in preview/rich-flow
+}
+
+export interface ImageCarouselCard {
+  id?: string;
+  imageUrl: string;
+  actionType: 'uri' | 'message';
+  uri?: string;
+  text?: string;
+  label?: string;
+}
+
+export interface ImageCarouselContent {
+  altText: string;
+  aspectRatio?: '1:1' | '1.51:1' | '20:13' | '16:9' | '9:16';
+  cards: ImageCarouselCard[];
 }
 
 export interface ImagemapArea {
@@ -81,8 +97,14 @@ export interface HeroCarouselContent {
 
 export interface MixedBlock {
   id: string;
-  type: 'text' | 'image' | 'imagemap' | 'flex_card' | 'flex_carousel';
-  content: TextMessageContent | SingleImageContent | ImagemapMessageContent | FlexCardContent | FlexCarouselContent;
+  type: 'text' | 'image' | 'image_carousel' | 'imagemap' | 'flex_card' | 'flex_carousel';
+  content:
+    | TextMessageContent
+    | SingleImageContent
+    | ImageCarouselContent
+    | ImagemapMessageContent
+    | FlexCardContent
+    | FlexCarouselContent;
 }
 
 export interface MixedMessageContent {
@@ -106,6 +128,7 @@ export interface Campaign {
   content:
     | TextMessageContent
     | SingleImageContent
+    | ImageCarouselContent
     | ImagemapMessageContent
     | FlexCardContent
     | FlexCarouselContent

@@ -2,6 +2,7 @@ import { Campaign } from '@/types/message';
 import { LineMessage } from '@/types/line';
 import { renderText } from './renderText';
 import { renderImage } from './renderImage';
+import { renderImageCarousel } from './renderImageCarousel';
 import { renderImagemap } from './renderImagemap';
 import { renderFlexCard } from './renderFlexCard';
 import { renderFlexCarousel } from './renderFlexCarousel';
@@ -17,6 +18,9 @@ export function renderLineMessages(campaign: Campaign): LineMessage[] {
 
     case 'image':
       return [renderImage(content as any)];
+
+    case 'image_carousel':
+      return [renderImageCarousel(content as any, utm)];
 
     case 'imagemap':
       return [renderImagemap(content as any, utm)];
@@ -48,6 +52,7 @@ export function renderLineMessages(campaign: Campaign): LineMessage[] {
 
 export * from './renderText';
 export * from './renderImage';
+export * from './renderImageCarousel';
 export * from './renderImagemap';
 export * from './renderFlexCard';
 export * from './renderFlexCarousel';

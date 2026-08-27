@@ -11,6 +11,7 @@ import {
 import { FormatSelectorStep } from './FormatSelectorStep';
 import { TextForm } from './forms/TextForm';
 import { ImageForm } from './forms/ImageForm';
+import { ImageCarouselForm } from './forms/ImageCarouselForm';
 import { ImagemapForm } from './forms/ImagemapForm';
 import { FlexCardForm } from './forms/FlexCardForm';
 import { FlexCarouselForm } from './forms/FlexCarouselForm';
@@ -162,6 +163,35 @@ export function CampaignWizard({ initialCampaign, initialTemplate }: CampaignWiz
           previewImageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&auto=format&fit=crop&q=80',
           altText: 'โปรโมชั่นพิเศษประจำเดือน',
           destinationUrl: 'https://myshop.line.me',
+        };
+        break;
+      case 'image_carousel':
+        newContent = {
+          altText: 'คอลเลกชันภาพโปรโมชั่นชุดพิเศษ',
+          aspectRatio: '1:1',
+          cards: [
+            {
+              id: `img-card-${nanoid(6)}`,
+              imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80',
+              actionType: 'uri',
+              uri: 'https://myshop.line.me/shoes',
+              label: 'สินค้า 1',
+            },
+            {
+              id: `img-card-${nanoid(6)}`,
+              imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
+              actionType: 'uri',
+              uri: 'https://myshop.line.me/headphones',
+              label: 'สินค้า 2',
+            },
+            {
+              id: `img-card-${nanoid(6)}`,
+              imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80',
+              actionType: 'uri',
+              uri: 'https://myshop.line.me/smartwatch',
+              label: 'สินค้า 3',
+            },
+          ],
         };
         break;
       case 'imagemap':
@@ -552,6 +582,13 @@ export function CampaignWizard({ initialCampaign, initialTemplate }: CampaignWiz
 
               {campaign.messageType === 'image' && (
                 <ImageForm
+                  content={campaign.content as any}
+                  onChange={(c) => setCampaign({ ...campaign, content: c })}
+                />
+              )}
+
+              {campaign.messageType === 'image_carousel' && (
+                <ImageCarouselForm
                   content={campaign.content as any}
                   onChange={(c) => setCampaign({ ...campaign, content: c })}
                 />

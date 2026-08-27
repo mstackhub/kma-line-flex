@@ -95,10 +95,58 @@ export function validateCampaign(campaign: Campaign): ValidationError[] {
           field: 'originalContentUrl',
           message: 'กรุณาระบุลิงก์รูปภาพ (Image URL)',
         });
-      } else if (!isValidHttpsUrl(imgContent.originalContentUrl)) {
+      } else if (!imgContent.originalContentUrl.startsWith('data:') && !isValidHttpsUrl(imgContent.originalContentUrl)) {
         errors.push({
           field: 'originalContentUrl',
           message: 'ลิงก์รูปภาพต้องเป็น HTTPS เท่านั้นตามมาตรฐาน LINE',
+        });
+      }
+      break;
+    }
+
+    case 'image_carousel': {
+      const imgCarousel = content as any;
+      if (!imgCarousel.altText || imgCarousel.altText.trim() === '') {
+        errors.push({
+          field: 'altText',
+          message: 'กรุณาระบุข้อความแจ้งเตือน (Alt Text) สำหรับ Image Carousel',
+        });
+      }
+
+      const cards = imgCarousel.cards || [];
+      if (cards.length === 0) {
+        errors.push({
+          field: 'cards',
+          message: 'Image Carousel ต้องมีรูปภาพอย่างน้อย 1 ภาพ',
+        });
+      } else if (cards.length > 12) {
+        errors.push({
+          field: 'cards',
+          message: `LINE รองรับ Carousel ได้สูงสุด 12 ภาพ (ปัจจุบันมี ${cards.length} ภาพ)`,
+        });
+      } else {
+        cards.forEach((card: any, idx: number) => {
+          const label = `ภาพที่ ${idx + 1}`;
+          if (!card.imageUrl || card.imageUrl.trim() === '') {
+            errors.push({
+              field: `cards.${idx}.imageUrl`,
+              message: `${label}: กรุณาระบุรูปภาพหรืออัปโหลดจากเครื่อง`,
+            });
+          } else if (!card.imageUrl.startsWith('data:') && !isValidHttpsUrl(card.imageUrl)) {
+            errors.push({
+              field: `cards.${idx}.imageUrl`,
+              message: `${label}: ลิงก์รูปภาพต้องเป็น HTTPS เท่านั้น`,
+            });
+          }
+
+          if (card.actionType === 'uri' && card.uri && card.uri.trim() !== '') {
+            if (!isValidHttpsUrl(card.uri)) {
+              errors.push({
+                field: `cards.${idx}.uri`,
+                message: `${label}: ลิงก์เมื่อกด (URL) ต้องขึ้นต้นด้วย https://`,
+              });
+            }
+          }
         });
       }
       break;
