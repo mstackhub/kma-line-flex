@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -16,59 +16,19 @@ import {
   PlusCircle,
   ChevronDown,
   Check,
-  AlertTriangle,
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useEnvironmentMode } from '@/context/SettingsContext';
 
 export function Navbar() {
   const pathname = usePathname();
-  const [settings, setSettings] = useState<{
-    environmentMode: string;
-    isConnected: boolean;
-  }>({
-    environmentMode: typeof window !== 'undefined'
-      ? localStorage.getItem('line_oa_env_mode') || 'development'
-      : 'development',
-    isConnected: false,
-  });
-
+  const { environmentMode, setMode, isLoading: isContextLoading } = useEnvironmentMode();
   const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
 
-  const fetchSettings = () => {
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.environmentMode) {
-          const mode = data.environmentMode;
-          setSettings({
-            environmentMode: mode,
-            isConnected: data.isConnected,
-          });
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('line_oa_env_mode', mode);
-          }
-        }
-      })
-      .catch(() => {});
-  };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem('line_oa_env_mode');
-      if (cached) {
-        setSettings((prev) => ({ ...prev, environmentMode: cached }));
-      }
-    }
-    fetchSettings();
-    const handleSettingsUpdated = () => fetchSettings();
-    window.addEventListener('settings-updated', handleSettingsUpdated);
-    return () => window.removeEventListener('settings-updated', handleSettingsUpdated);
-  }, [pathname]);
-
   const handleSwitchMode = async (newMode: 'development' | 'production') => {
-    if (newMode === settings.environmentMode) {
+    if (newMode === environmentMode) {
       setIsModeDropdownOpen(false);
       return;
     }
@@ -81,26 +41,9 @@ export function Navbar() {
     }
 
     setIsSwitching(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('line_oa_env_mode', newMode);
-    }
-    setSettings((prev) => ({ ...prev, environmentMode: newMode }));
-
-    try {
-      const res = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ environmentMode: newMode }),
-      });
-      if (res.ok) {
-        window.dispatchEvent(new Event('settings-updated'));
-      }
-    } catch {
-      alert('เกิดข้อผิดพลาดในการเปลี่ยนโหมด');
-    } finally {
-      setIsSwitching(false);
-      setIsModeDropdownOpen(false);
-    }
+    await setMode(newMode);
+    setIsSwitching(false);
+    setIsModeDropdownOpen(false);
   };
 
   const navItems = [
@@ -172,18 +115,18 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
-              disabled={isSwitching}
+              disabled={isSwitching || isContextLoading}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border shadow-2xs transition-all cursor-pointer select-none',
-                settings.environmentMode === 'production'
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 ring-2 ring-amber-400/30 animate-pulse'
+                environmentMode === 'production'
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 ring-2 ring-amber-400/30'
                   : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
               )}
               title="คลิกเพื่อสลับโหมดความปลอดภัย (DEV / PROD)"
             >
               {isSwitching ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : settings.environmentMode === 'production' ? (
+              ) : environmentMode === 'production' ? (
                 <>
                   <ShieldAlert className="h-3.5 w-3.5" />
                   <span>⚡ PROD MODE</span>
@@ -210,7 +153,7 @@ export function Navbar() {
                   onClick={() => handleSwitchMode('development')}
                   className={cn(
                     'w-full flex items-start gap-2 p-2 rounded-xl text-left text-xs transition-colors cursor-pointer',
-                    settings.environmentMode === 'development'
+                    environmentMode === 'development'
                       ? 'bg-blue-50 text-blue-900 font-bold border border-blue-200'
                       : 'hover:bg-slate-50 text-slate-700'
                   )}
@@ -219,7 +162,7 @@ export function Navbar() {
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span>DEVELOPMENT</span>
-                      {settings.environmentMode === 'development' && (
+                      {environmentMode === 'development' && (
                         <Check className="h-3.5 w-3.5 text-blue-600" />
                       )}
                     </div>
@@ -235,7 +178,7 @@ export function Navbar() {
                   onClick={() => handleSwitchMode('production')}
                   className={cn(
                     'w-full flex items-start gap-2 p-2 rounded-xl text-left text-xs transition-colors cursor-pointer',
-                    settings.environmentMode === 'production'
+                    environmentMode === 'production'
                       ? 'bg-amber-50 text-amber-900 font-bold border border-amber-300'
                       : 'hover:bg-slate-50 text-slate-700'
                   )}
@@ -244,7 +187,7 @@ export function Navbar() {
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span>PRODUCTION</span>
-                      {settings.environmentMode === 'production' && (
+                      {environmentMode === 'production' && (
                         <Check className="h-3.5 w-3.5 text-amber-600" />
                       )}
                     </div>

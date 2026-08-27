@@ -17,13 +17,14 @@ import {
 } from 'lucide-react';
 import { EnvironmentMode } from '@/types/message';
 import { cn } from '@/lib/utils';
+import { useEnvironmentMode } from '@/context/SettingsContext';
 
 export default function SettingsPage() {
+  const { environmentMode, setMode } = useEnvironmentMode();
   const [channelId, setChannelId] = useState('');
   const [channelSecret, setChannelSecret] = useState('');
   const [channelAccessToken, setChannelAccessToken] = useState('');
   const [geminiApiKey, setGeminiApiKey] = useState('');
-  const [environmentMode, setEnvironmentMode] = useState<EnvironmentMode>('development');
   const [defaultTestUserId, setDefaultTestUserId] = useState('');
 
   const [hasSecret, setHasSecret] = useState(false);
@@ -46,7 +47,6 @@ export default function SettingsPage() {
           setChannelSecret(data.channelSecret || '');
           setChannelAccessToken(data.channelAccessToken || '');
           setGeminiApiKey(data.geminiApiKey || '');
-          setEnvironmentMode(data.environmentMode || 'development');
           setDefaultTestUserId(data.defaultTestUserId || '');
           setHasSecret(data.hasSecret);
           setHasAccessToken(data.hasAccessToken);
@@ -195,7 +195,7 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Development Mode Option */}
             <div
-              onClick={() => setEnvironmentMode('development')}
+              onClick={() => setMode('development')}
               className={cn(
                 'rounded-2xl border p-4 cursor-pointer transition-all space-y-2',
                 environmentMode === 'development'
@@ -211,8 +211,8 @@ export default function SettingsPage() {
                 <input
                   type="radio"
                   checked={environmentMode === 'development'}
-                  onChange={() => setEnvironmentMode('development')}
-                  className="text-blue-600"
+                  onChange={() => setMode('development')}
+                  className="text-blue-600 cursor-pointer"
                 />
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
@@ -223,7 +223,12 @@ export default function SettingsPage() {
 
             {/* Production Mode Option */}
             <div
-              onClick={() => setEnvironmentMode('production')}
+              onClick={() => {
+                const confirmProd = window.confirm(
+                  '⚠️ คุณต้องการเปลี่ยนเป็น PRODUCTION MODE (โหมดส่งจริง) ใช่หรือไม่?\n\nเมื่ออยู่ในโหมดนี้ การกดยิง Broadcast จะส่งข้อความถึงผู้ติดตามทุกคนจริง'
+                );
+                if (confirmProd) setMode('production');
+              }}
               className={cn(
                 'rounded-2xl border p-4 cursor-pointer transition-all space-y-2',
                 environmentMode === 'production'
@@ -239,8 +244,13 @@ export default function SettingsPage() {
                 <input
                   type="radio"
                   checked={environmentMode === 'production'}
-                  onChange={() => setEnvironmentMode('production')}
-                  className="text-amber-600"
+                  onChange={() => {
+                    const confirmProd = window.confirm(
+                      '⚠️ คุณต้องการเปลี่ยนเป็น PRODUCTION MODE (โหมดส่งจริง) ใช่หรือไม่?\n\nเมื่ออยู่ในโหมดนี้ การกดยิง Broadcast จะส่งข้อความถึงผู้ติดตามทุกคนจริง'
+                    );
+                    if (confirmProd) setMode('production');
+                  }}
+                  className="text-amber-600 cursor-pointer"
                 />
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
