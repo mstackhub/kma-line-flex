@@ -27,7 +27,9 @@ export function Navbar() {
     environmentMode: string;
     isConnected: boolean;
   }>({
-    environmentMode: 'development',
+    environmentMode: typeof window !== 'undefined'
+      ? localStorage.getItem('line_oa_env_mode') || 'development'
+      : 'development',
     isConnected: false,
   });
 
@@ -39,16 +41,26 @@ export function Navbar() {
       .then((res) => res.json())
       .then((data) => {
         if (data && data.environmentMode) {
+          const mode = data.environmentMode;
           setSettings({
-            environmentMode: data.environmentMode,
+            environmentMode: mode,
             isConnected: data.isConnected,
           });
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('line_oa_env_mode', mode);
+          }
         }
       })
       .catch(() => {});
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('line_oa_env_mode');
+      if (cached) {
+        setSettings((prev) => ({ ...prev, environmentMode: cached }));
+      }
+    }
     fetchSettings();
     const handleSettingsUpdated = () => fetchSettings();
     window.addEventListener('settings-updated', handleSettingsUpdated);
@@ -69,6 +81,11 @@ export function Navbar() {
     }
 
     setIsSwitching(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('line_oa_env_mode', newMode);
+    }
+    setSettings((prev) => ({ ...prev, environmentMode: newMode }));
+
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -76,7 +93,6 @@ export function Navbar() {
         body: JSON.stringify({ environmentMode: newMode }),
       });
       if (res.ok) {
-        setSettings((prev) => ({ ...prev, environmentMode: newMode }));
         window.dispatchEvent(new Event('settings-updated'));
       }
     } catch {
